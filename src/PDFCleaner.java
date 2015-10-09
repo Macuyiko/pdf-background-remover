@@ -7,9 +7,11 @@ import org.pdfclown.documents.contents.ContentScanner;
 import org.pdfclown.documents.contents.Contents;
 import org.pdfclown.documents.contents.composition.PrimitiveComposer;
 import org.pdfclown.documents.contents.objects.ContentObject;
+import org.pdfclown.documents.contents.objects.LocalGraphicsState;
 import org.pdfclown.documents.contents.objects.Path;
 import org.pdfclown.documents.contents.objects.SetFillColor;
 import org.pdfclown.documents.contents.objects.Text;
+import org.pdfclown.documents.contents.objects.XObject;
 import org.pdfclown.documents.interaction.viewer.ViewerPreferences;
 import org.pdfclown.documents.interchange.metadata.Information;
 import org.pdfclown.files.File;
@@ -20,8 +22,8 @@ import org.pdfclown.documents.contents.colorSpaces.DeviceRGBColor;
 public class PDFCleaner {
 	public static boolean DEBUG = false;
 	
-	private static String inputPath = "c:/users/n11093/desktop/demo_1e_M_kogel_oplossingen.pdf";
-	private static String outputPath = "c:/users/n11093/desktop/demo_1e_M_kogel_oplossingen.wit.pdf";
+	private static String inputPath = "c:/users/n11093/desktop/Les2.pdf";
+	private static String outputPath = "c:/users/n11093/desktop/Les2.wit.pdf";
 	
 	public static void main(String[] args) throws FileNotFoundException {
 		if (args.length > 0) {
@@ -72,6 +74,11 @@ public class PDFCleaner {
 				t.getComponents().add(new PdfInteger(1));
 				t.getComponents().add(new PdfInteger(1));
 				t.getComponents().add(new PdfInteger(1));
+			} else if(level.getParent() instanceof LocalGraphicsState && object instanceof XObject) {
+				XObject t = (XObject) object;
+				LocalGraphicsState p = (LocalGraphicsState) level.getParent();
+				if (!p.getObjects().get(0).toString().contains("[2038")) continue;
+				t.getObjects().clear();
 			}
 		}
 	}
